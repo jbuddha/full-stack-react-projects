@@ -5,6 +5,6 @@ export function initDatabase() {
   mongoose.connection.on('open', () => {
     console.info('successfully connected to database:', DATABASE_URL)
   })
-  const connection = mongoose.connect(DATABASE_URL)
+  const connection = mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   return connection
 }
