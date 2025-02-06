@@ -26,6 +26,7 @@ export function CreatePost() {
         createPostMutation.mutate()
       }}
     >
+      <h2>Create Post</h2>
       <div>
         <label htmlFor='create-title'>Title: </label>
         <input
