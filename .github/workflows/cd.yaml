@@ -20,6 +20,8 @@ jobs:
         with:
           service_account: ${{ secrets.GOOGLECLOUD_SERVICE_ACCOUNT }}
           credentials_json: ${{ secrets.GOOGLECLOUD_CREDENTIALS }}
+
+      # Backend deployment steps
       - name: Build and push backend image
         uses: docker/build-push-action@v4
         with:
@@ -27,6 +29,13 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/blog-backend:latest
+
+      # Add wait timer after backend push
+      - name: Wait for backend image to be available
+        run: |
+          echo "Waiting for 60 seconds to ensure image is available..."
+          sleep 60
+
       - id: deploy-backend
         name: Deploy backend
         uses: google-github-actions/deploy-cloudrun@v1
@@ -34,6 +43,8 @@ jobs:
           service: blog-backend
           image: ${{ secrets.DOCKERHUB_USERNAME }}/blog-backend:latest
           region: ${{ secrets.GOOGLECLOUD_REGION }}
+
+      # Frontend deployment steps
       - name: Build and push frontend image
         uses: docker/build-push-action@v4
         with:
@@ -42,6 +53,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/blog-frontend:latest
           build-args: VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}/api/v1
+
+      # Add wait timer after frontend push
+      - name: Wait for frontend image to be available
+        run: |
+          echo "Waiting for 60 seconds to ensure image is available..."
+          sleep 60
+
       - id: deploy-frontend
         name: Deploy frontend
         uses: google-github-actions/deploy-cloudrun@v1
