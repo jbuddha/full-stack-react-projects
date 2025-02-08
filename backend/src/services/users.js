@@ -27,7 +27,6 @@ export async function loginUser({ username, password }) {
 export async function getUserInfoById(userId) {
   try {
     const user = await User.findById(userId)
-    console.log(user)
     if (!user) return { username: userId }
     return { username: user.username }
   } catch (err) {
