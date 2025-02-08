@@ -23,3 +23,15 @@ export async function loginUser({ username, password }) {
   const token = jwt.sign({ sub: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' })
   return token
 }
+
+export async function getUserInfoById(userId) {
+  try {
+    const user = await User.findById(userId)
+    console.log(user)
+    if (!user) return { username: userId }
+    return { username: user.username }
+  } catch (err) {
+    console.error(`error fetching user ${userId}`, err)
+    return { username: userId }
+  }
+}
