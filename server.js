@@ -24,7 +24,7 @@ async function createDevServer() {
       const templateHtml = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8')
       const template = await vite.transformIndexHtml(req.originalUrl, templateHtml)
       const { render } = await vite.ssrLoadModule('/src/entry-server.jsx')
-      const appHtml = await render()
+      const appHtml = await render(req)
       const html = template.replace(`<!--ssr-outlet-->`, appHtml)
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {

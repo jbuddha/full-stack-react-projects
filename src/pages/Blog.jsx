@@ -6,8 +6,9 @@ import { PostList } from '../components/PostList.jsx'
 import { PostSorting } from '../components/PostSorting.jsx'
 import { getPosts } from '../api/posts.js'
 import { Header } from '../components/Header.jsx'
+import PropTypes from 'prop-types'
 
-export function Blog() {
+export function Blog({ initialData }) {
   const [author, setAuthor] = useState('')
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortOrder, setSortOrder] = useState('descending')
@@ -15,6 +16,7 @@ export function Blog() {
   const postsQuery = useQuery({
     queryKey: ['posts', { author, sortBy, sortOrder }],
     queryFn: () => getPosts({ author, sortBy, sortOrder }),
+    initialData,
   })
 
   const posts = postsQuery.data ?? []
@@ -42,4 +44,8 @@ export function Blog() {
       <PostList posts={posts} />
     </div>
   )
+}
+
+Blog.propTypes = {
+  initialData: PropTypes.shape(PostList.propsTypes),
 }
