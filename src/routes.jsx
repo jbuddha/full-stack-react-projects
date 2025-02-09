@@ -53,7 +53,7 @@ export const routes = [
     element: <Login />,
   },
   {
-    path: '/posts/:postId',
+    path: '/posts/:postId/:slug?',
     loader: async ({ params }) => {
       const queryClient = new QueryClient()
       const postId = params.postId

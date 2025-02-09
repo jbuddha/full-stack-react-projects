@@ -4,6 +4,7 @@ import { Post } from '../components/Post.jsx'
 import PropTypes from 'prop-types'
 import { getPostById } from '../api/posts.js'
 import { Header } from '../components/Header.jsx'
+import { Helmet } from 'react-helmet-async'
 
 export function ViewPost({ postId }) {
   const postQuery = useQuery({
@@ -14,6 +15,11 @@ export function ViewPost({ postId }) {
 
   return (
     <div style={{ padding: 8 }}>
+      {post && (
+        <Helmet>
+          <title>{post.title} | Basics & Beyond Blog</title>
+        </Helmet>
+      )}
       <Header />
       <br />
       <hr />

@@ -7,6 +7,7 @@ import { PostSorting } from '../components/PostSorting.jsx'
 import { getPosts } from '../api/posts.js'
 import { Header } from '../components/Header.jsx'
 import PropTypes from 'prop-types'
+import { Helmet } from 'react-helmet-async'
 
 export function Blog({ initialData }) {
   const [author, setAuthor] = useState('')
@@ -23,6 +24,9 @@ export function Blog({ initialData }) {
 
   return (
     <div style={{ padding: 8 }}>
+      <Helmet>
+        <title>Basics & Beyond Blog</title>
+      </Helmet>
       <Header />
       <br />
       <hr />
