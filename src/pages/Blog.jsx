@@ -26,6 +26,7 @@ export function Blog({ initialData }) {
     <div style={{ padding: 8 }}>
       <Helmet>
         <title>Basics & Beyond Blog</title>
+        <meta name='description' content='A blog about the basics and beyond of everything technology and science' />
       </Helmet>
       <Header />
       <br />

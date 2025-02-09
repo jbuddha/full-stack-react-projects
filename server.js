@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { generateSitemap } from './generateSitemap.js'
 
 import express from 'express'
 import dotenv from 'dotenv'
@@ -20,6 +21,11 @@ async function createProdServer() {
 
   app.use('*', async (req, res, next) => {
     try {
+      if (req.originalUrl === '/sitemap.xml') {
+        const sitemap = await generateSitemap()
+        return res.status(200).set({ 'Content-Type': 'application/xml' }).end(sitemap)
+      }
+
       let template = fs.readFileSync(path.resolve(__dirname, 'dist/client/index.html'), 'utf-8')
       const render = (await import('./dist/server/entry-server.js')).render
       const appHtml = await render(req)
@@ -47,6 +53,11 @@ async function createDevServer() {
 
   app.use('*', async (req, res, next) => {
     try {
+      if (req.originalUrl === '/sitemap.xml') {
+        const sitemap = await generateSitemap()
+        return res.status(200).set({ 'Content-Type': 'application/xml' }).end(sitemap)
+      }
+
       const templateHtml = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8')
       const template = await vite.transformIndexHtml(req.originalUrl, templateHtml)
       const { render } = await vite.ssrLoadModule('/src/entry-server.jsx')
