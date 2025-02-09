@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 
 export const AuthContext = createContext({
@@ -7,7 +7,7 @@ export const AuthContext = createContext({
 })
 
 export const AuthContextProvider = ({ children }) => {
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState(null)
   return <AuthContext.Provider value={{ token, setToken }}>{children}</AuthContext.Provider>
 }
 

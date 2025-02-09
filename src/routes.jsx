@@ -1,10 +1,10 @@
 import { useLoaderData } from 'react-router-dom'
-import { Login } from './pages/Login.jsx'
-import { SignUp } from './pages/Signup.jsx'
+import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Blog } from './pages/Blog.jsx'
+import { SignUp } from './pages/Signup.jsx'
+import { Login } from './pages/Login.jsx'
 import { ViewPost } from './pages/ViewPost.jsx'
 import { getPosts, getPostById } from './api/posts.js'
-import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { getUserInfo } from './api/users.js'
 
 export const routes = [
@@ -31,9 +31,8 @@ export const routes = [
           queryKey: ['users', userId],
           queryFn: () => getUserInfo(userId),
         })
-
-        return dehydrate(queryClient)
       }
+      return dehydrate(queryClient)
     },
     Component() {
       const dehydratedState = useLoaderData()
@@ -55,8 +54,10 @@ export const routes = [
   {
     path: '/posts/:postId/:slug?',
     loader: async ({ params }) => {
-      const queryClient = new QueryClient()
       const postId = params.postId
+
+      const queryClient = new QueryClient()
+
       const post = await getPostById(postId)
 
       await queryClient.prefetchQuery({

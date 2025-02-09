@@ -1,6 +1,6 @@
 import ReactDOMServer from 'react-dom/server'
-import { App } from './App.jsx'
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router-dom/server'
+import { App } from './App.jsx'
 import { routes } from './routes.jsx'
 import { createFetchRequest } from './request.js'
 
@@ -9,10 +9,10 @@ const handler = createStaticHandler(routes)
 export async function render(req) {
   const fetchRequest = createFetchRequest(req)
   const context = await handler.query(fetchRequest)
-  const routes = createStaticRouter(handler.dataRoutes, context)
+  const router = createStaticRouter(handler.dataRoutes, context)
   return ReactDOMServer.renderToString(
     <App>
-      <StaticRouterProvider router={routes} context={context} />
+      <StaticRouterProvider router={router} context={context} />
     </App>,
   )
 }
