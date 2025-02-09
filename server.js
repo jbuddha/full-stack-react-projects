@@ -1,11 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { generateSitemap } from './generateSitemap.js'
 
 import express from 'express'
 import dotenv from 'dotenv'
 dotenv.config()
+
+import { generateSitemap } from './generateSitemap.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -20,12 +21,12 @@ async function createProdServer() {
   )
 
   app.use('*', async (req, res, next) => {
-    try {
-      if (req.originalUrl === '/sitemap.xml') {
-        const sitemap = await generateSitemap()
-        return res.status(200).set({ 'Content-Type': 'application/xml' }).end(sitemap)
-      }
+    if (req.originalUrl === '/sitemap.xml') {
+      const sitemap = await generateSitemap()
+      return res.status(200).set({ 'Content-Type': 'application/xml' }).end(sitemap)
+    }
 
+    try {
       let template = fs.readFileSync(path.resolve(__dirname, 'dist/client/index.html'), 'utf-8')
       const render = (await import('./dist/server/entry-server.js')).render
       const appHtml = await render(req)
@@ -52,12 +53,12 @@ async function createDevServer() {
   app.use(vite.middlewares)
 
   app.use('*', async (req, res, next) => {
-    try {
-      if (req.originalUrl === '/sitemap.xml') {
-        const sitemap = await generateSitemap()
-        return res.status(200).set({ 'Content-Type': 'application/xml' }).end(sitemap)
-      }
+    if (req.originalUrl === '/sitemap.xml') {
+      const sitemap = await generateSitemap()
+      return res.status(200).set({ 'Content-Type': 'application/xml' }).end(sitemap)
+    }
 
+    try {
       const templateHtml = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8')
       const template = await vite.transformIndexHtml(req.originalUrl, templateHtml)
       const { render } = await vite.ssrLoadModule('/src/entry-server.jsx')
@@ -80,7 +81,5 @@ if (process.env.NODE_ENV === 'production') {
   )
 } else {
   const app = await createDevServer()
-  app.listen(process.env.PORT, () => {
-    console.log(`ssr dev server running on http://localhost:${process.env.PORT}`)
-  })
+  app.listen(process.env.PORT, () => console.log(`ssr dev server running on http://localhost:${process.env.PORT}`))
 }

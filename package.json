@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "cross-env NODE_ENV=production node server",
     "dev": "node server",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --outDir dist/server --ssr src/entry-server.jsx",
-    "start": "cross-env NODE_ENV=production node server",
     "lint": "eslint src",
     "preview": "vite preview",
     "prepare": "husky install"
