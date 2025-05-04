@@ -19,7 +19,7 @@ export function CreatePost() {
   })
 
   if (!token) {
-    return <div>Please login to create new posts</div>
+    return <div id='login-to-post'>Please login to create new posts</div>
   }
 
   return (
