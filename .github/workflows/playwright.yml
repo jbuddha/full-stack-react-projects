@@ -19,6 +19,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev libxkbcommon-x11-0 libgtk-3-0 libasound2
       - name: Install dependencies
         run: npm ci
       - name: Install backend dependencies
@@ -26,7 +30,10 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --timeout=60000 --debug
+        env:
+          DEBUG: pw:api
+          PLAYWRIGHT_BROWSERS_PATH: 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:

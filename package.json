@@ -12,6 +12,7 @@
     "lint": "eslint src",
     "preview": "vite preview",
     "prepare": "husky install",
+    "start:test": "concurrently \"npm run build && npm run start\" \"cd backend/ && npm run start\"",
     "e2e": "concurrently \"npm run e2e:client\" \"npm run e2e:server\"",
     "e2e:client": "npm run build && npm run start",
     "e2e:server": "cd backend/ && npm run e2e"
