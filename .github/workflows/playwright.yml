@@ -4,12 +4,6 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
-permissions:
-  contents: read
-  id-token: write
-  checks: write
-
 jobs:
   test:
     timeout-minutes: 60
@@ -19,21 +13,35 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgbm-dev libxkbcommon-x11-0 libgtk-3-0 libasound2
+          cache: 'npm'
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install backend dependencies
         run: cd backend/ && npm ci
-      - name: Install Playwright Browsers
+
+      - name: Install Playwright
         run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test --timeout=60000 --debug
+
+      # No need for manual dependency installation with --with-deps flag above
+
+      - name: Create env file
+        run: |
+          echo "PORT=5173" > .env
+          echo "DATABASE_URL=mongodb://localhost:27017/blog-test" > backend/.env
+
+      - name: Start MongoDB
+        run: |
+          docker run -d -p 27017:27017 mongo:latest
+          sleep 5 # Give MongoDB time to start
+
+      - name: Run Playwright tests with debugging
         env:
-          DEBUG: pw:api
-          PLAYWRIGHT_BROWSERS_PATH: 0
+          DEBUG: pw:api,pw:browser*
+          NODE_ENV: test
+        run: npx playwright test --timeout=60000
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
