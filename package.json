@@ -12,10 +12,11 @@
     "lint": "eslint src",
     "preview": "vite preview",
     "prepare": "husky install",
-    "start:test": "concurrently \"npm run build && npm run start\" \"cd backend/ && npm run start\"",
     "e2e": "concurrently \"npm run e2e:client\" \"npm run e2e:server\"",
     "e2e:client": "npm run build && npm run start",
-    "e2e:server": "cd backend/ && npm run e2e"
+    "e2e:server": "cd backend/ && npm run e2e",
+    "start:test": "concurrently \"npm run build && cross-env PORT=5173 NODE_ENV=test node server\" \"cd backend/ && npm run start\"",
+    "test:server": "node test-server.js"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",

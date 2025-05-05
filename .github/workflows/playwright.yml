@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -24,23 +25,37 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps
 
-      # No need for manual dependency installation with --with-deps flag above
-
-      - name: Create env file
-        run: |
-          echo "PORT=5173" > .env
-          echo "DATABASE_URL=mongodb://localhost:27017/blog-test" > backend/.env
-
       - name: Start MongoDB
         run: |
-          docker run -d -p 27017:27017 mongo:latest
+          docker run -d -p 27017:27017 --name mongodb mongo:latest
           sleep 5 # Give MongoDB time to start
 
-      - name: Run Playwright tests with debugging
+      # Start backend separately
+      - name: Start backend server
+        run: |
+          cd backend
+          echo "DATABASE_URL=mongodb://localhost:27017/blog-test" > .env
+          npm start &
+          sleep 10 # Give backend time to start
+          curl -v http://localhost:3001/api/v1/health || echo "Backend health check failed"
+
+      # Build frontend
+      - name: Build frontend
+        run: npm run build
+
+      # Run tests with explicit server start
+      - name: Run Playwright tests
         env:
-          DEBUG: pw:api,pw:browser*
+          PORT: 5173
           NODE_ENV: test
-        run: npx playwright test --timeout=60000
+        run: |
+          # Start test server in background
+          node test-server.js &
+          sleep 5 # Give server time to start
+          curl -v http://localhost:5173/health || echo "Frontend health check failed"
+          
+          # Run tests without webServer config
+          PLAYWRIGHT_TEST_BASE_URL=http://localhost:5173 npx playwright test --config=playwright.ci.config.js
 
       - uses: actions/upload-artifact@v4
         if: always()
